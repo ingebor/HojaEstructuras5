@@ -7,7 +7,7 @@ import random
 import math
 
 capacityRAM = 100
-cantProcesos = 200
+cantProcesos = 25
 numCPU= 2
 interval = 10
 insCPU = 6
@@ -81,7 +81,7 @@ env.run()
 
 def promedio (s): return sum(s) * 1.0/len(s)
 tempPromTot = promedio(tempProcesos)
-varTempTot = map(lambda x: (x - tempPromTot) ** 2, tempProcesos)
+varTempTot = list(map(lambda x: (x - tempPromTot) ** 2, tempProcesos))
 desvTempTotal = math.sqrt(promedio(varTempTot))
 
 print("El promedio de tiempo es de: ", tempPromTot, ", su desivacion estandar es de: ",desvTempTotal )

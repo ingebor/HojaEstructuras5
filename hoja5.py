@@ -27,5 +27,62 @@ class proceso:
         self.instrucciones=random.randint(1,10)
         self.memRequerida = random.randint(1,10)
         self.env = env
-        self.terminated = false
+        self.terminated = False
+        self.sistema_op = sistema_op
+        self.createdTime = 0
+        self.finishedTime = 0
+        self.totalTime = 0
+        self.proceso = env.process(self.procesar(env, sistema_op))
+        
+    def procesar(self, env, sistema_op):
+        inicio = env.now
+        self.createdTime = inicio
+        print('%s: Creado en %d' % (self.id, inicio))
+        with sistema_op.RAM.get(self.memoriaRequerida) as getRam:
+            yield getRam
+            
+            print('%s: Obtiene RAM en %d (Estado: Wait)' % (self.id, env.now))
+            siguiente = 0
+            while not self.terminated:
+                with sistema_op.CPU.request() as req:
+                    print('%s: Espera al CPU en %d (Estado: Wait)' % (self.id, env.now))
+                    yield req
+                    
+                    print('%s: Obtiene CPU en %d (Estado: Running)' % (self.id, env.now))
+                    for i in range (insCPU):
+                        if self.instrucciones > 0:
+                            self.instrucciones -= 1
+                            siguiente = random.randint (1,2)
+                    yield env.timeout(1)
+                    
+                    if siguiente == 1:
+                        print ('%s: Espera operacion in/out en %d (Estado: in/out)' % (self.id, env.now))
+                        yield env.timeout(tempOpInOut)
+                        
+                    if self.instrucciones ==0:
+                        self.terminated = True
+            print('%s: Terminado en %d (Estado: Terminated)' % (self.id, env.now))
+            sistema_op.RAM.put(self.memoriaRequerida)
+        fin = env.now
+        self.finishedTime = fin
+        self.totalTime = int(self.finishedTime-self.createdTime)
+        tempProcesos.insert(self.no, self.totalTime)
+        
+def process_generator(env, sistema_op):
+    for i in range (cantProcesos):
+        tempCreacion = math.exp(1.0/interval)
+        proceso('Proceso %d' % i, i, env, sistema_op)
+        yield env.timeout(tempCreacion)
+        
+env = simpy.Environment()
+sistema_op=sistemaOp(env)
+env.process(process_generator(env, sistema_op))
+env.run()
+
+def promedio (s): return sum(s) * 1.0/len(s)
+tempPromTot = promedio(tempProcesos)
+varTempTot = map(lambda x: (x - tempPromTot) ** 2, tempProcesos)
+desvTempTotal = math.sqrt(promedio(varTempTot))
+
+print("El promedio de tiempo es de: ", tempPromTot, ", su desivacion estandar es de: ",desvTempTotal )
         

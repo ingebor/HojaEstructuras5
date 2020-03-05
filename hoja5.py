@@ -7,13 +7,13 @@ import random
 import math
 
 capacityRAM = 100
-cantProcesos = 25
+cantProcesos = 150
 numCPU= 2
 interval = 10
-insCPU = 6
+insCPU = 3
 tempOpInOut = 1
 tempProcesos = []
-random.seed(15)
+random.seed(10)
 
 class sistemaOp:
     def __init__(self, env):

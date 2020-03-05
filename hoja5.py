@@ -16,12 +16,12 @@ tempProcesos = []
 random.seed(15)
 
 class sistemaOp:
-    def _init_(self, env):
+    def __init__(self, env):
         self.RAM = simpy.Container(env, init= capacityRAM, capacity=capacityRAM)
-        sel.CPU = simpy.Resource(env, capacity=numCPU)
+        self.CPU = simpy.Resource(env, capacity=numCPU)
         
 class proceso:
-    def _init_(self, id, no, env, sistema_op):
+    def __init__(self, id, no, env, sistema_op):
         self.id=id
         self.no=no
         self.instrucciones=random.randint(1,10)
@@ -38,7 +38,7 @@ class proceso:
         inicio = env.now
         self.createdTime = inicio
         print('%s: Creado en %d' % (self.id, inicio))
-        with sistema_op.RAM.get(self.memoriaRequerida) as getRam:
+        with sistema_op.RAM.get(self.memRequerida) as getRam:
             yield getRam
             
             print('%s: Obtiene RAM en %d (Estado: Wait)' % (self.id, env.now))
@@ -62,7 +62,7 @@ class proceso:
                     if self.instrucciones ==0:
                         self.terminated = True
             print('%s: Terminado en %d (Estado: Terminated)' % (self.id, env.now))
-            sistema_op.RAM.put(self.memoriaRequerida)
+            sistema_op.RAM.put(self.memRequerida)
         fin = env.now
         self.finishedTime = fin
         self.totalTime = int(self.finishedTime-self.createdTime)

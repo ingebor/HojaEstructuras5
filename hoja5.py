@@ -65,9 +65,9 @@ class proceso:
                     if siguiente == 1:
                         print ('%s: Espera operacion in/out en %d (Estado: in/out)' % (self.id, env.now))
                         yield env.timeout(tempOpInOut)
-                        
-                    #Fin uso de RAM
-                        if self.instrucciones ==0:
+                            
+                        #Fin uso de RAM
+                    if self.instrucciones ==0:
                         self.terminated = True
             print('%s: Terminado en %d (Estado: Terminated)' % (self.id, env.now))
             sistema_op.RAM.put(self.memRequerida) #Regresa la RAM usada
